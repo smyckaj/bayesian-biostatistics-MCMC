@@ -14,7 +14,7 @@ x
 ```
 
 ```
-[1] 21 20 19 20 15
+[1] 18 26 19 16 18
 ```
  
  
@@ -36,7 +36,7 @@ $$p(x)=\int_\lambda (\prod\limits_{i=1}^n \dfrac{\lambda^{x_i}e^{-\lambda}}{x_i!
 
 
 
-Analytical solution
+Analytical solution - properties
 ========================================================
  
  - is accurate
@@ -83,7 +83,7 @@ Numerical computation
 ========================================================
 ![plot of chunk unnamed-chunk-4](pres-figure/unnamed-chunk-4-1.png) 
 
-Numerical computation
+Numerical computation - properties
 ========================================================
  - theoretically works always
  
@@ -163,7 +163,7 @@ Metropolis - Hastings
 And now switch to "histogram thinking"
 ![plot of chunk unnamed-chunk-12](pres-figure/unnamed-chunk-12-1.png) 
 
-Metropolis - Hastings
+Metropolis - Hastings - properties
 ========================================================
  - is more efficient than numerical integration
  
@@ -172,10 +172,17 @@ Metropolis - Hastings
  - need to set up the jumps
  
  - can be slow if we have many variables
-
+ 
 Metropolis - Hastings
 ========================================================
 ![plot of chunk unnamed-chunk-13](pres-figure/unnamed-chunk-13-1.png) 
+
+Metropolis - Hastings - properties
+========================================================
+ - samples from the beginning do not reflect the distribution
+ 
+ - correlation between subsequent steps
+
 
 Gibbs
 ========================================================
@@ -189,7 +196,7 @@ Gibbs
 
 Gibbs
 ========================================================
-Sampling from univariate distribution is always quite simply.
+Sampling from univariate distribution is always quite simple.
 
 If we knew $\sigma$ we could sample $\mu$ from $p(\mu|\sigma,y)$
 
@@ -234,17 +241,25 @@ Take sampled $\mu$ and sample $\sigma$ from $p(\sigma|\mu,y)$
 Repeat
 
 
-Gibbs
+Gibbs - properties
 ========================================================
  - for many parameters is more efficient than numerical integration and M-H
 
  - problem with camels
  
  - problem with cigars
-
-Gibbs
+ 
+Gibbs - properties
 ========================================================
 ![plot of chunk unnamed-chunk-21](pres-figure/unnamed-chunk-21-1.png) 
+
+Gibbs - properties
+========================================================
+ - samples from the beginning do not reflect the distribution
+ 
+ - correlation between subsequent steps
+
+
 
 MCMC
 ========================================================
@@ -254,13 +269,14 @@ MCMC
 BUGS language
 ========================================================
 There is a plenty of environments that can do Gibbs sampling for you
+
  - WinBUGS
  - OpenBUGS [www.openbugs.net](http://openbugs.net/w/FrontPage)
  - **JAGS** [mcmc-jags.sourceforge.net/](http://mcmc-jags.sourceforge.net/)
 
 ... and all those use BUGS language
 
-JAGS - preparing the data
+JAGS
 ========================================================
 
 ```r
@@ -273,58 +289,33 @@ my.data
 
 ```
 $y
-[1]  32.38750 111.87828  34.43014  87.51529  37.74286
+[1] 77.332797 -1.786264 45.065916 68.739789 33.683361
 
 $N
 [1] 5
 ```
 
-JAGS - model specification
+JAGS
 ========================================================
-We will fit this model to the data:
-$y_i \sim Normal(\mu, \sigma)$
+BUGS language works with graphs
 
-```
-model
-{
-  # p(mu) 
-  
-  # p(sigma) 
-  
-  # p(y|lambda)
-  
-}
-```
+![model](model.png)
 
-JAGS - model specification
+
+
+JAGS
 ========================================================
-We will fit this model to the data:
-$y_i \sim Normal(\mu, \sigma)$
 
 ```
 model
 {
   # p(mu) ... mu prior
-  
-  # p(sigma) ... sigma prior
-  
-  # p(y|lambda) ... likelihood
-  
-}
-```
-
-JAGS - model specification
-========================================================
-We will fit this model to the data:
-$y_i \sim Normal(\mu, \sigma)$
-
-```
-model
-{
-  # priors
     mu ~ dnorm (0, 0.001)
+    
+  # p(sigma) ... sigma prior
     sigma ~ dunif(0, 100)
-  # likelihood
+    
+  # p(y|mu, sigma) ... likelihood
     for(i in 1:N)
     {
       y[i] ~ dnorm(mu, sigma)    
@@ -332,7 +323,7 @@ model
 }
 ```
 
-JAGS - model specification
+JAGS
 ========================================================
 We will dump the model to a file using ```cat("", file="")```
 
@@ -353,7 +344,7 @@ model
 ", file="my_model.txt")
 ```
 
-JAGS - model specification
+JAGS
 ========================================================
 
 ```r
@@ -371,23 +362,44 @@ Compiling model graph
 Initializing model
 ```
 
-JAGS - model specification
+JAGS
 ========================================================
 ![plot of chunk unnamed-chunk-25](pres-figure/unnamed-chunk-25-1.png) 
 
 
-STAN sampler
+STAN - properties
 =======================================================
- - [mc-stan.org](mc-stan.org)
- - uses addaptive combination of Gibbs ant Metropolis - Hastings
- sampler
+[mc-stan.org](mc-stan.org)
+ 
+ - uses more sophisticated MCMC sampling than Gibbs or M-H
+ 
+ - suffers less from steps autocorrelation
  
  - may be more efficient for complicated posteriors (cigars, camels)
  
- - is more difficult to command
+ - language is more difficult to command then BUGS
 
 
 INLA
 ========================================================
-dodelat
+(Integrated Nested Laplace Approximation)
 
+[www.r-inla.org](www.r-inla.org)
+
+Uses the idea that in certain types of models $p(some_parameters|other_parameters,data)$ can be aproximated by normal distribution.
+
+This makes the expression $p(data|parameters)*p(parameters)$ integrable.
+
+
+INLA
+========================================================
+
+![plot of chunk unnamed-chunk-26](pres-figure/unnamed-chunk-26-1.png) 
+
+INLA - properties
+========================================================
+ - fast
+ 
+ - does not suffer from sampling issues
+ 
+ - applicable only to some classes of models (for details see [http://www.r-inla.org/models/latent-models](http://www.r-inla.org/models/latent-models))
