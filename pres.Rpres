@@ -1,0 +1,465 @@
+How to calculate posterior probability?
+========================================================
+author: Jan Smycka
+date: 
+
+
+The data
+========================================================
+We have five data points from poisson distribution
+```{r}
+x=rpois(5,20)
+x
+```
+ 
+ 
+We would like to know posterior distribution of $\lambda$
+
+Analytical solution
+========================================================
+
+Poisson distribution posterior can be expressed as
+
+$$p(\lambda|x)=\dfrac{p(x|\lambda)*p(\lambda)}{p(x)}$$
+
+where
+
+$$p(x|\lambda)=\prod\limits_{i=1}^n \dfrac{\lambda^{x_i}e^{-\lambda}}{x_i!}; p(\lambda)=0.01\\$$
+
+
+$$p(x)=\int_\lambda (\prod\limits_{i=1}^n \dfrac{\lambda^{x_i}e^{-\lambda}}{x_i!}*0.01)  d\lambda\\ $$
+
+
+
+Analytical solution
+========================================================
+ 
+ - is accurate
+ 
+ 
+ 
+ - cannot be obtained for most model types
+ 
+
+Numerical computation
+========================================================
+We can try to compute numerically
+
+The numerator can be expressed as R function
+```{r}
+baypo=function(l){
+  #likelihood
+  lh=function(l){
+    prod(((l^x)*exp(-l))/factorial(x))
+  }
+  #likelihood and prior
+  100000000*lh(l)*dunif(l,0,100)
+  }
+```
+
+
+Numerical computation
+========================================================
+
+Now we can generate a grid and feed the function
+```{r}
+lambda=seq(0,100,0.01)
+postdist=NULL
+for (i in 1:length(lambda)){
+  postdist[i]=baypo(lambda[i])
+  }
+prob=postdist/sum(postdist)
+```
+
+
+Numerical computation
+========================================================
+```{r,echo=FALSE}
+plot(prob~lambda)
+```
+
+Numerical computation
+========================================================
+ - theoretically works always
+ 
+ - can be paralelized on clusters
+ 
+ - is terribly slow and wasteful
+ 
+
+Metropolis - Hastings
+========================================================
+So what about more clever ways of sampling?
+
+```{r,echo=FALSE}
+plot(prob~lambda, type="l")
+```
+
+Metropolis - Hastings
+========================================================
+If we want to know where is modus
+
+```{r,echo=FALSE}
+plot(prob~lambda, type="l")
+points(40,0,cex=2, pch=16, col="red")
+```
+
+Metropolis - Hastings
+========================================================
+If we want to know where is modus
+
+
+```{r,echo=FALSE}
+plot(prob~lambda, type="l")
+points(40,0,cex=2, pch=16, col="red")
+points(48,0,cex=2, pch=16)
+```
+
+Metropolis - Hastings
+========================================================
+If we want to know where is modus
+
+
+```{r,echo=FALSE}
+plot(prob~lambda, type="l")
+points(40,0,cex=2, pch=16, col="red")
+points(48,0,cex=2, pch=4)
+```
+
+Metropolis - Hastings
+========================================================
+If we want to know where is modus
+
+
+```{r,echo=FALSE}
+plot(prob~lambda, type="l")
+points(40,0,cex=2, pch=16, col="red")
+points(48,0,cex=2, pch=4)
+points(32,0,cex=2, pch=16)
+```
+Metropolis - Hastings
+========================================================
+If we want to know where is modus
+
+
+```{r,echo=FALSE}
+plot(prob~lambda, type="l")
+points(40,0,cex=2, pch=16)
+points(48,0,cex=2, pch=4)
+points(32,0,cex=2, pch=16, col="red")
+
+```
+
+Metropolis - Hastings
+========================================================
+If we want to know where is modus
+
+
+```{r,echo=FALSE}
+plot(prob~lambda, type="l")
+points(40,0,cex=2, pch=16)
+points(48,0,cex=2, pch=4)
+points(32,0,cex=2, pch=16, col="red")
+points(26,0,cex=2, pch=16)
+```
+
+Metropolis - Hastings
+========================================================
+If we want to know where the modus is, we accept each $\lambda_n$ which satisfies
+
+$$\frac{p(\lambda_n|y) }{ p(\lambda_o|y)}=\frac{p(x|\lambda_n)*p(\lambda_n) }{ p(x|\lambda_o)*p(\lambda_o)}>1$$
+
+Metropolis - Hastings
+========================================================
+If we want to hit each value of $\lambda$ with probability $p(\lambda|y)$, we accept each $\lambda_n$
+
+$$\frac{p(\lambda_n|y) }{ p(\lambda_o|y)}=\frac{p(x|\lambda_n)*p(\lambda_n) }{ p(x|\lambda_o)*p(\lambda_o)}>1$$
+
+with probablity 1, and
+
+
+$$\frac{p(\lambda_n|y) }{ p(\lambda_o|y)}=\frac{p(x|\lambda_n)*p(\lambda_n) }{ p(x|\lambda_o)*p(\lambda_o)}<1$$
+
+with probability $\frac{p(\lambda_n|y) }{ p(\lambda_o|y)}$
+
+
+Metropolis - Hastings
+========================================================
+And now switch to "histogram thinking"
+```{r,echo=FALSE}
+samples=100000*postdist
+plot(samples~lambda, type="h")
+```
+
+Metropolis - Hastings
+========================================================
+ - is more efficient than numerical integration
+ 
+ - problem with camels
+ 
+ - need to set up the jumps
+ 
+ - can be slow if we have many variables
+
+Metropolis - Hastings
+========================================================
+```{r,echo=FALSE}
+#camel
+plot(prob+rev(prob)~lambda, type="l", ylab="prob")
+
+```
+
+Gibbs
+========================================================
+Lets imagine we have more variables than one. For example data from normal distribution and we want to estimate distribution of $\mu$ and $\sigma$.
+
+$$p(\mu, \sigma|y)=\dfrac{p(y|\mu, \sigma)*p(\mu)*p(\sigma)}{p(y)}$$
+
+Gibbs
+========================================================
+```{r, echo=FALSE}
+mean=48.1
+sd=6.1
+n=100
+m=seq(30,70,0.1)
+s=seq(1,100,0.1)
+#aposteriorní hustota
+fc=function(m,s){dnorm(m,45,sqrt(10))*(1/(s))*((2*pi*s)^(-n/2))*exp(-(1/(2*s))*(((n-1)*(sd^2)+n*(mean-m)^2)))}
+#poèítá hodnoty na gridu
+apostms=outer(m,s,fc)
+contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma",drawlabels=F)
+```
+
+Gibbs
+========================================================
+Sampling from univariate distribution is always quite simply.
+
+If we knew $\sigma$ we could sample $\mu$ from $p(\mu|\sigma,y)$
+
+If we knew $\mu$ awe could sample $\sigma$ from $p(\sigma|\mu,y)$
+
+
+Gibbs
+========================================================
+Yes, if sampling from univariate is simple, we didn't have to do it by M-H in previous chapter. But M-H can be easily generalized to more dimension unlike direct sampling.
+
+Gibbs
+========================================================
+```{r,echo=FALSE}
+contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
+lines(c(40,60),c(30,30), lty=2)
+```
+
+Gibbs
+========================================================
+```{r,echo=FALSE}
+contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
+lines(c(40,60),c(30,30), lty=2)
+points(47,30,pch=16,cex=1.4)
+```
+
+Gibbs
+========================================================
+```{r,echo=FALSE}
+contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
+lines(c(40,60),c(30,30), lty=2)
+points(47,30,pch=16,cex=1.4)
+lines(c(47,47),c(20,60), lty=2)
+```
+
+Gibbs
+========================================================
+```{r,echo=FALSE}
+contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
+lines(c(40,60),c(30,30), lty=2)
+points(47,30,pch=16,cex=1.4)
+lines(c(47,47),c(20,60), lty=2)
+points(47,40,pch=16,cex=1.4)
+```
+Gibbs
+========================================================
+```{r,echo=FALSE}
+contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
+lines(c(40,60),c(30,30), lty=2)
+points(47,30,pch=16,cex=1.4)
+lines(c(47,47),c(20,60), lty=2)
+points(47,40,pch=16,cex=1.4)
+lines(c(40,60),c(40,40), lty=2)
+```
+Gibbs
+========================================================
+```{r,echo=FALSE}
+contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
+lines(c(40,60),c(30,30), lty=2)
+points(47,30,pch=16,cex=1.4)
+lines(c(47,47),c(20,60), lty=2)
+points(47,40,pch=16,cex=1.4)
+lines(c(40,60),c(40,40), lty=2)
+points(48.5,40,pch=16,cex=1.4)
+```
+
+Gibbs
+========================================================
+
+Get initial values of $\mu$ and $\sigma$.
+
+Take initial $\sigma$ and sample $\mu$ from $p(\mu|\sigma,y)$
+
+Take sampled $\mu$ and sample $\sigma$ from $p(\sigma|\mu,y)$
+
+Repeat
+
+
+Gibbs
+========================================================
+ - for many parameters is more efficient than numerical integration and M-H
+
+ - problem with camels
+ 
+ - problem with cigars
+
+Gibbs
+========================================================
+```{r,echo=FALSE}
+library(mvtnorm)
+x=seq(1,100,1)
+y=seq(1,100,1)
+z=matrix(rep(0,10000),100,100)
+
+for (i in 1:100){
+  for (j in 1:100){
+    z[i,j]=dmvnorm(c(x[i],y[j]), mean = c(50,50), sigma = matrix(c(100,96,96,100),2,2))
+  }
+}
+
+contour(x,y,z, xlim=c(25,75),ylim=c(25,75),xlab="theta1", ylab="theta2",drawlabels=F)
+
+```
+
+MCMC
+========================================================
+![metrop](metrop.gif)
+
+
+BUGS language
+========================================================
+There is a plenty of environments that can do Gibbs sampling for you
+ - WinBUGS
+ - OpenBUGS [www.openbugs.net](http://openbugs.net/w/FrontPage)
+ - **JAGS** [mcmc-jags.sourceforge.net/](http://mcmc-jags.sourceforge.net/)
+
+... and all those use BUGS language
+
+JAGS - preparing the data
+========================================================
+```{r}
+y <- rnorm(5, 48.1, 6.1^2)
+N <- 5
+
+my.data <- list(y=y, N=N)
+my.data
+```
+
+JAGS - model specification
+========================================================
+We will fit this model to the data:
+$y_i \sim Normal(\mu, \sigma)$
+
+```
+model
+{
+  # p(mu) 
+  
+  # p(sigma) 
+  
+  # p(y|lambda)
+  
+}
+```
+
+JAGS - model specification
+========================================================
+We will fit this model to the data:
+$y_i \sim Normal(\mu, \sigma)$
+
+```
+model
+{
+  # p(mu) ... mu prior
+  
+  # p(sigma) ... sigma prior
+  
+  # p(y|lambda) ... likelihood
+  
+}
+```
+
+JAGS - model specification
+========================================================
+We will fit this model to the data:
+$y_i \sim Normal(\mu, \sigma)$
+
+```
+model
+{
+  # priors
+    mu ~ dnorm (0, 0.001)
+    sigma ~ dunif(0, 100)
+  # likelihood
+    for(i in 1:N)
+    {
+      y[i] ~ dnorm(mu, sigma)    
+    }
+}
+```
+
+JAGS - model specification
+========================================================
+We will dump the model to a file using ```cat("", file="")```
+
+```{r}
+cat("
+model
+{
+  # priors
+    mu ~ dnorm (0, 0.001)
+    sigma ~ dunif(0, 100)
+  # likelihood
+    for(i in 1:N)
+    {
+      y[i] ~ dnorm(mu, sigma)    
+    }
+}
+", file="my_model.txt")
+```
+
+JAGS - model specification
+========================================================
+```{r}
+library(R2jags)
+
+fitted.model <- jags(data=my.data,  model.file="my_model.txt", parameters.to.save=c("mu", "sigma"), n.chains=1, n.iter=300, n.burnin=100)
+```
+
+JAGS - model specification
+========================================================
+```{r, echo=FALSE}
+  plot(as.mcmc(fitted.model))
+```
+
+
+STAN sampler
+=======================================================
+ - [mc-stan.org](mc-stan.org)
+ - uses addaptive combination of Gibbs ant Metropolis - Hastings
+ sampler
+ 
+ - may be more efficient for complicated posteriors (cigars, camels)
+ 
+ - is more difficult to command
+
+
+INLA
+========================================================
+dodelat
+
