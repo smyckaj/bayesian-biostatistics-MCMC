@@ -7,9 +7,14 @@ date:
 The data
 ========================================================
 We have five data points from poisson distribution
-```{r}
+
+```r
 x=rpois(5,20)
 x
+```
+
+```
+[1] 21 20 19 20 15
 ```
  
  
@@ -46,7 +51,8 @@ Numerical computation
 We can try to compute numerically
 
 The numerator can be expressed as R function
-```{r}
+
+```r
 baypo=function(l){
   #likelihood
   lh=function(l){
@@ -62,7 +68,8 @@ Numerical computation
 ========================================================
 
 Now we can generate a grid and feed the function
-```{r}
+
+```r
 lambda=seq(0,100,0.01)
 postdist=NULL
 for (i in 1:length(lambda)){
@@ -74,9 +81,7 @@ prob=postdist/sum(postdist)
 
 Numerical computation
 ========================================================
-```{r,echo=FALSE}
-plot(prob~lambda)
-```
+![plot of chunk unnamed-chunk-4](pres-figure/unnamed-chunk-4-1.png) 
 
 Numerical computation
 ========================================================
@@ -91,77 +96,47 @@ Metropolis - Hastings
 ========================================================
 So what about more clever ways of sampling?
 
-```{r,echo=FALSE}
-plot(prob~lambda, type="l")
-```
+![plot of chunk unnamed-chunk-5](pres-figure/unnamed-chunk-5-1.png) 
 
 Metropolis - Hastings
 ========================================================
 If we want to know where the modus is
 
-```{r,echo=FALSE}
-plot(prob~lambda, type="l")
-points(40,0,cex=2, pch=16, col="red")
-```
+![plot of chunk unnamed-chunk-6](pres-figure/unnamed-chunk-6-1.png) 
 
 Metropolis - Hastings
 ========================================================
 If we want to know where the modus is
 
 
-```{r,echo=FALSE}
-plot(prob~lambda, type="l")
-points(40,0,cex=2, pch=16, col="red")
-points(48,0,cex=2, pch=16)
-```
+![plot of chunk unnamed-chunk-7](pres-figure/unnamed-chunk-7-1.png) 
 
 Metropolis - Hastings
 ========================================================
 If we want to know where the modus is
 
 
-```{r,echo=FALSE}
-plot(prob~lambda, type="l")
-points(40,0,cex=2, pch=16, col="red")
-points(48,0,cex=2, pch=4)
-```
+![plot of chunk unnamed-chunk-8](pres-figure/unnamed-chunk-8-1.png) 
 
 Metropolis - Hastings
 ========================================================
 If we want to know where the modus is
 
 
-```{r,echo=FALSE}
-plot(prob~lambda, type="l")
-points(40,0,cex=2, pch=16, col="red")
-points(48,0,cex=2, pch=4)
-points(32,0,cex=2, pch=16)
-```
+![plot of chunk unnamed-chunk-9](pres-figure/unnamed-chunk-9-1.png) 
 Metropolis - Hastings
 ========================================================
 If we want to know where the modus is
 
 
-```{r,echo=FALSE}
-plot(prob~lambda, type="l")
-points(40,0,cex=2, pch=16)
-points(48,0,cex=2, pch=4)
-points(32,0,cex=2, pch=16, col="red")
-
-```
+![plot of chunk unnamed-chunk-10](pres-figure/unnamed-chunk-10-1.png) 
 
 Metropolis - Hastings
 ========================================================
 If we want to know where the modus is
 
 
-```{r,echo=FALSE}
-plot(prob~lambda, type="l")
-points(40,0,cex=2, pch=16)
-points(48,0,cex=2, pch=4)
-points(32,0,cex=2, pch=16, col="red")
-points(26,0,cex=2, pch=16)
-```
+![plot of chunk unnamed-chunk-11](pres-figure/unnamed-chunk-11-1.png) 
 
 Metropolis - Hastings
 ========================================================
@@ -186,10 +161,7 @@ with probability $\frac{p(\lambda_n|y) }{ p(\lambda_o|y)}$
 Metropolis - Hastings
 ========================================================
 And now switch to "histogram thinking"
-```{r,echo=FALSE}
-samples=100000*postdist
-plot(samples~lambda, type="h")
-```
+![plot of chunk unnamed-chunk-12](pres-figure/unnamed-chunk-12-1.png) 
 
 Metropolis - Hastings
 ========================================================
@@ -203,11 +175,7 @@ Metropolis - Hastings
 
 Metropolis - Hastings
 ========================================================
-```{r,echo=FALSE}
-#camel
-plot(prob+rev(prob)~lambda, type="l", ylab="prob")
-
-```
+![plot of chunk unnamed-chunk-13](pres-figure/unnamed-chunk-13-1.png) 
 
 Gibbs
 ========================================================
@@ -217,18 +185,7 @@ $$p(\mu, \sigma|y)=\dfrac{p(y|\mu, \sigma)*p(\mu)*p(\sigma)}{p(y)}$$
 
 Gibbs
 ========================================================
-```{r, echo=FALSE}
-mean=48.1
-sd=6.1
-n=100
-m=seq(30,70,0.1)
-s=seq(1,100,0.1)
-#aposteriorní hustota
-fc=function(m,s){dnorm(m,45,sqrt(10))*(1/(s))*((2*pi*s)^(-n/2))*exp(-(1/(2*s))*(((n-1)*(sd^2)+n*(mean-m)^2)))}
-#poèítá hodnoty na gridu
-apostms=outer(m,s,fc)
-contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma",drawlabels=F)
-```
+![plot of chunk unnamed-chunk-14](pres-figure/unnamed-chunk-14-1.png) 
 
 Gibbs
 ========================================================
@@ -245,58 +202,25 @@ Yes, if sampling from univariate is simple, we didn't have to do it by M-H in pr
 
 Gibbs
 ========================================================
-```{r,echo=FALSE}
-contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
-lines(c(40,60),c(30,30), lty=2)
-```
+![plot of chunk unnamed-chunk-15](pres-figure/unnamed-chunk-15-1.png) 
 
 Gibbs
 ========================================================
-```{r,echo=FALSE}
-contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
-lines(c(40,60),c(30,30), lty=2)
-points(47,30,pch=16,cex=1.4)
-```
+![plot of chunk unnamed-chunk-16](pres-figure/unnamed-chunk-16-1.png) 
 
 Gibbs
 ========================================================
-```{r,echo=FALSE}
-contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
-lines(c(40,60),c(30,30), lty=2)
-points(47,30,pch=16,cex=1.4)
-lines(c(47,47),c(20,60), lty=2)
-```
+![plot of chunk unnamed-chunk-17](pres-figure/unnamed-chunk-17-1.png) 
 
 Gibbs
 ========================================================
-```{r,echo=FALSE}
-contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
-lines(c(40,60),c(30,30), lty=2)
-points(47,30,pch=16,cex=1.4)
-lines(c(47,47),c(20,60), lty=2)
-points(47,40,pch=16,cex=1.4)
-```
+![plot of chunk unnamed-chunk-18](pres-figure/unnamed-chunk-18-1.png) 
 Gibbs
 ========================================================
-```{r,echo=FALSE}
-contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
-lines(c(40,60),c(30,30), lty=2)
-points(47,30,pch=16,cex=1.4)
-lines(c(47,47),c(20,60), lty=2)
-points(47,40,pch=16,cex=1.4)
-lines(c(40,60),c(40,40), lty=2)
-```
+![plot of chunk unnamed-chunk-19](pres-figure/unnamed-chunk-19-1.png) 
 Gibbs
 ========================================================
-```{r,echo=FALSE}
-contour(m,s,apostms,xlim=c(46,50),ylim=c(28,50),xlab="mu",ylab="sigma", drawlabels=F)
-lines(c(40,60),c(30,30), lty=2)
-points(47,30,pch=16,cex=1.4)
-lines(c(47,47),c(20,60), lty=2)
-points(47,40,pch=16,cex=1.4)
-lines(c(40,60),c(40,40), lty=2)
-points(48.5,40,pch=16,cex=1.4)
-```
+![plot of chunk unnamed-chunk-20](pres-figure/unnamed-chunk-20-1.png) 
 
 Gibbs
 ========================================================
@@ -320,21 +244,7 @@ Gibbs
 
 Gibbs
 ========================================================
-```{r,echo=FALSE}
-library(mvtnorm)
-x=seq(1,100,1)
-y=seq(1,100,1)
-z=matrix(rep(0,10000),100,100)
-
-for (i in 1:100){
-  for (j in 1:100){
-    z[i,j]=dmvnorm(c(x[i],y[j]), mean = c(50,50), sigma = matrix(c(100,96,96,100),2,2))
-  }
-}
-
-contour(x,y,z, xlim=c(25,75),ylim=c(25,75),xlab="theta1", ylab="theta2",drawlabels=F)
-
-```
+![plot of chunk unnamed-chunk-21](pres-figure/unnamed-chunk-21-1.png) 
 
 MCMC
 ========================================================
@@ -352,12 +262,21 @@ There is a plenty of environments that can do Gibbs sampling for you
 
 JAGS - preparing the data
 ========================================================
-```{r}
+
+```r
 y <- rnorm(5, 48.1, 6.1^2)
 N <- 5
 
 my.data <- list(y=y, N=N)
 my.data
+```
+
+```
+$y
+[1]  32.38750 111.87828  34.43014  87.51529  37.74286
+
+$N
+[1] 5
 ```
 
 JAGS - model specification
@@ -417,7 +336,8 @@ JAGS - model specification
 ========================================================
 We will dump the model to a file using ```cat("", file="")```
 
-```{r}
+
+```r
 cat("
 model
 {
@@ -435,17 +355,25 @@ model
 
 JAGS - model specification
 ========================================================
-```{r}
+
+```r
 library(R2jags)
 
 fitted.model <- jags(data=my.data,  model.file="my_model.txt", parameters.to.save=c("mu", "sigma"), n.chains=1, n.iter=300, n.burnin=100)
 ```
 
+```
+Compiling model graph
+   Resolving undeclared variables
+   Allocating nodes
+   Graph Size: 11
+
+Initializing model
+```
+
 JAGS - model specification
 ========================================================
-```{r, echo=FALSE}
-  plot(as.mcmc(fitted.model))
-```
+![plot of chunk unnamed-chunk-25](pres-figure/unnamed-chunk-25-1.png) 
 
 
 STAN sampler
