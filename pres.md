@@ -14,7 +14,7 @@ x
 ```
 
 ```
-[1] 18 26 19 16 18
+[1] 20 17 26 14 21
 ```
  
  
@@ -200,7 +200,7 @@ Sampling from univariate distribution is always quite simple.
 
 If we knew $\sigma$ we could sample $\mu$ from $p(\mu|\sigma,y)$
 
-If we knew $\mu$ awe could sample $\sigma$ from $p(\sigma|\mu,y)$
+If we knew $\mu$ we could sample $\sigma$ from $p(\sigma|\mu,y)$
 
 
 Gibbs
@@ -289,7 +289,7 @@ my.data
 
 ```
 $y
-[1] 77.332797 -1.786264 45.065916 68.739789 33.683361
+[1] -56.443204  26.573720   4.243429  20.665666  78.403370
 
 $N
 [1] 5

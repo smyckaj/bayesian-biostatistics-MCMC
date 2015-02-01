@@ -243,7 +243,7 @@ Sampling from univariate distribution is always quite simple.
 
 If we knew $\sigma$ we could sample $\mu$ from $p(\mu|\sigma,y)$
 
-If we knew $\mu$ awe could sample $\sigma$ from $p(\sigma|\mu,y)$
+If we knew $\mu$ we could sample $\sigma$ from $p(\sigma|\mu,y)$
 
 
 Gibbs
