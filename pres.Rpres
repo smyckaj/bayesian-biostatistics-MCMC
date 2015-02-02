@@ -40,6 +40,12 @@ $p(\theta|y)$ ... posterior
 
 $p(y)$ ... the horrible thing
 
+Why is p(y) horrible?
+========================================================
+$$p(y)=\sum_\theta p(\theta) \times p(y|\theta)$$
+
+$$p(y)=\int_\theta p(\theta) \times p(y|\theta) d\theta$$
+
 The data
 ========================================================
 We have five data points from poisson distribution
