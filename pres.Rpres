@@ -20,7 +20,10 @@ Conditional probability
 We can also say that
 $$P(B)=P(B|A) \times P(A)+P(B|nonA) \times P(nonA)$$
 so
-$$P(A|B) =\frac {P(B|A) \times P(A)}{P(B)}=\frac {P(B|A) \times P(A)}{P(B|A) \times P(A)+P(B|nonA) \times P(nonA)}$$
+$$P(A|B) =\frac {P(B|A) \times P(A)}{P(B)}$$
+
+$$=\frac {P(B|A) \times P(A)}{P(B|A) \times P(A)+P(B|nonA) \times P(nonA)}$$
+
 if we use sum sign
 $$P(A|B)=\frac {P(B|A) \times P(A)}{\sum_A P(B|A) \times P(A)}$$
 

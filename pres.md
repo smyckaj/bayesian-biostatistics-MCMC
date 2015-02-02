@@ -20,7 +20,10 @@ Conditional probability
 We can also say that
 $$P(B)=P(B|A) \times P(A)+P(B|nonA) \times P(nonA)$$
 so
-$$P(A|B) =\frac {P(B|A) \times P(A)}{P(B)}=\frac {P(B|A) \times P(A)}{P(B|A) \times P(A)+P(B|nonA) \times P(nonA)}$$
+$$P(A|B) =\frac {P(B|A) \times P(A)}{P(B)}$$
+
+$$=\frac {P(B|A) \times P(A)}{P(B|A) \times P(A)+P(B|nonA) \times P(nonA)}$$
+
 if we use sum sign
 $$P(A|B)=\frac {P(B|A) \times P(A)}{\sum_A P(B|A) \times P(A)}$$
 
@@ -56,7 +59,7 @@ x
 ```
 
 ```
-[1] 16 28 24 14 23
+[1] 27 30 15 22 22
 ```
  
  
@@ -331,7 +334,7 @@ my.data
 
 ```
 $y
-[1]  53.766901   9.224949  82.638007 -24.901408  81.322366
+[1] -26.26397  45.94571  40.74765  32.04463  48.32490
 
 $N
 [1] 5
