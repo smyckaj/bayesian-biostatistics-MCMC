@@ -1,8 +1,44 @@
-How to calculate posterior probability?
+Doing it Bayesian
 ========================================================
-author: Jan Smycka
+author: Jan Smycka, Petr Keil
 date: 
 
+Conditional probability
+========================================================
+Rule for joint (AND) probability is
+$$P(A \cap B) = P(A) \times P(B|A)$$
+$A$ and $B$ can be swapped arbitrarily
+$$P(A \cap B) = P(B) \times P(A|B)$$
+and so
+$$P(B) \times P(A|B) = P(A) \times P(B|A)$$
+which we can rearrange to get
+$$P(A|B) = \frac {P(B|A) \times P(A)}{P(B)}$$
+which is **the Bayes rule**.
+
+Conditional probability
+========================================================
+We can also say that
+$$P(B)=P(B|A) \times P(A)+P(B|nonA) \times P(nonA)$$
+so
+$$P(A|B) =\frac {P(B|A) \times P(A)}{P(B)}=\frac {P(B|A) \times P(A)}{P(B|A) \times P(A)+P(B|nonA) \times P(nonA)}$$
+if we use sum sign
+$$P(A|B)=\frac {P(B|A) \times P(A)}{\sum_A P(B|A) \times P(A)}$$
+
+Bayes rule in statistics
+========================================================
+we can replace $A$ and $B$ by model parameters $\theta$ and the data $y$ to get 
+
+$p(\theta|y) = \frac {p(\theta) \times p(y|\theta)}{p(y)}$
+
+where
+
+$p(y|\theta)$ ... likelihood
+
+$p(\theta)$ ... prior
+
+$p(\theta|y)$ ... posterior
+
+$p(y)$ ... the horrible thing
 
 The data
 ========================================================
@@ -14,7 +50,7 @@ x
 ```
 
 ```
-[1] 20 17 26 14 21
+[1] 23 11 15 20 15
 ```
  
  
@@ -289,7 +325,7 @@ my.data
 
 ```
 $y
-[1] -56.443204  26.573720   4.243429  20.665666  78.403370
+[1] -47.42102  67.85587  57.63565 -16.92654  39.92111
 
 $N
 [1] 5
