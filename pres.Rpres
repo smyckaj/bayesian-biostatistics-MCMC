@@ -1,6 +1,6 @@
 Doing it Bayesian
 ========================================================
-author: Jan Smycka, Petr Keil
+author: Jan Smycka
 date: 
 
 Conditional probability
@@ -400,6 +400,8 @@ MCMC
 ========================================================
 ![mcmc illustration](http://mbjoseph.github.io/images/metrop.gif)
 
+from Maxwell Joseph's GitHub (http://mbjoseph.github.io/images/metrop.gif)
+
 
 BUGS language
 ========================================================
@@ -414,7 +416,7 @@ There is a plenty of environments that can do Gibbs sampling for you
 JAGS
 ========================================================
 ```{r}
-y <- rnorm(5, 48.1, 6.1^2)
+y <- rnorm(5, 48.1, 6.1)
 N <- 5
 
 my.data <- list(y=y, N=N)
@@ -440,11 +442,12 @@ model
     
   # p(sigma) ... sigma prior
     sigma ~ dunif(0, 100)
+    tau<-1/(sigma*sigma)
     
   # p(y|mu, sigma) ... likelihood
     for(i in 1:N)
     {
-      y[i] ~ dnorm(mu, sigma)    
+      y[i] ~ dnorm(mu, tau)    
     }
 }
 ```
@@ -457,13 +460,17 @@ We will dump the model to a file using ```cat("", file="")```
 cat("
 model
 {
-  # priors
+  # p(mu) ... mu prior
     mu ~ dnorm (0, 0.001)
+    
+  # p(sigma) ... sigma prior
     sigma ~ dunif(0, 100)
-  # likelihood
+    tau<-1/(sigma*sigma)
+    
+  # p(y|mu, sigma) ... likelihood
     for(i in 1:N)
     {
-      y[i] ~ dnorm(mu, sigma)    
+      y[i] ~ dnorm(mu, tau)    
     }
 }
 ", file="my_model.txt")
@@ -474,7 +481,7 @@ JAGS
 ```{r}
 library(R2jags)
 
-fitted.model <- jags(data=my.data,  model.file="my_model.txt", parameters.to.save=c("mu", "sigma"), n.chains=1, n.iter=300, n.burnin=100)
+fitted.model <- jags(data=my.data,  model.file="my_model.txt", parameters.to.save=c("mu", "sigma"), n.chains=1, n.iter=1000, n.burnin=100)
 ```
 
 JAGS

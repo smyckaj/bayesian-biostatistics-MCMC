@@ -1,6 +1,6 @@
 Doing it Bayesian
 ========================================================
-author: Jan Smycka, Petr Keil
+author: Jan Smycka
 date: 
 
 Conditional probability
@@ -59,7 +59,7 @@ x
 ```
 
 ```
-[1] 27 30 15 22 22
+[1] 19 20 24 27 21
 ```
  
  
@@ -310,6 +310,8 @@ MCMC
 ========================================================
 ![mcmc illustration](http://mbjoseph.github.io/images/metrop.gif)
 
+from Maxwell Joseph's GitHub (http://mbjoseph.github.io/images/metrop.gif)
+
 
 BUGS language
 ========================================================
@@ -325,7 +327,7 @@ JAGS
 ========================================================
 
 ```r
-y <- rnorm(5, 48.1, 6.1^2)
+y <- rnorm(5, 48.1, 6.1)
 N <- 5
 
 my.data <- list(y=y, N=N)
@@ -334,7 +336,7 @@ my.data
 
 ```
 $y
-[1] -26.26397  45.94571  40.74765  32.04463  48.32490
+[1] 36.12103 48.29577 56.31363 52.99604 46.24476
 
 $N
 [1] 5
@@ -359,11 +361,12 @@ model
     
   # p(sigma) ... sigma prior
     sigma ~ dunif(0, 100)
+    tau<-1/(sigma*sigma)
     
   # p(y|mu, sigma) ... likelihood
     for(i in 1:N)
     {
-      y[i] ~ dnorm(mu, sigma)    
+      y[i] ~ dnorm(mu, tau)    
     }
 }
 ```
@@ -377,13 +380,17 @@ We will dump the model to a file using ```cat("", file="")```
 cat("
 model
 {
-  # priors
+  # p(mu) ... mu prior
     mu ~ dnorm (0, 0.001)
+    
+  # p(sigma) ... sigma prior
     sigma ~ dunif(0, 100)
-  # likelihood
+    tau<-1/(sigma*sigma)
+    
+  # p(y|mu, sigma) ... likelihood
     for(i in 1:N)
     {
-      y[i] ~ dnorm(mu, sigma)    
+      y[i] ~ dnorm(mu, tau)    
     }
 }
 ", file="my_model.txt")
@@ -395,14 +402,14 @@ JAGS
 ```r
 library(R2jags)
 
-fitted.model <- jags(data=my.data,  model.file="my_model.txt", parameters.to.save=c("mu", "sigma"), n.chains=1, n.iter=300, n.burnin=100)
+fitted.model <- jags(data=my.data,  model.file="my_model.txt", parameters.to.save=c("mu", "sigma"), n.chains=1, n.iter=1000, n.burnin=100)
 ```
 
 ```
 Compiling model graph
    Resolving undeclared variables
    Allocating nodes
-   Graph Size: 11
+   Graph Size: 14
 
 Initializing model
 ```

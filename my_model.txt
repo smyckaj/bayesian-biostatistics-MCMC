@@ -1,12 +1,16 @@
 
 model
 {
-  # priors
+  # p(mu) ... mu prior
     mu ~ dnorm (0, 0.001)
+    
+  # p(sigma) ... sigma prior
     sigma ~ dunif(0, 100)
-  # likelihood
+    tau<-1/(sigma*sigma)
+    
+  # p(y|mu, sigma) ... likelihood
     for(i in 1:N)
     {
-      y[i] ~ dnorm(mu, sigma)    
+      y[i] ~ dnorm(mu, tau)    
     }
 }
